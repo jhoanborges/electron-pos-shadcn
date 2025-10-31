@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from "electron";
 import registerListeners from "./helpers/ipc/listeners-register";
+import { initializeDatabase, closeDatabase } from "./helpers/database/db";
 // "electron-squirrel-startup" seems broken when packaging with vite
 //import started from "electron-squirrel-startup";
 import path from "path";
@@ -47,11 +48,29 @@ async function installExtensions() {
   }
 }
 
-app.whenReady().then(createWindow).then(installExtensions);
+// Initialize database synchronously before app is ready
+let databaseInitialized = false;
+
+app.on("ready", async () => {
+  // Initialize database first
+  try {
+    initializeDatabase();
+    databaseInitialized = true;
+    console.log("Database initialized successfully");
+  } catch (error) {
+    console.error("Failed to initialize database:", error);
+    console.error(error);
+  }
+
+  // Create window after database is ready
+  createWindow();
+  await installExtensions();
+});
 
 //osX only
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
+    closeDatabase();
     app.quit();
   }
 });
@@ -60,5 +79,9 @@ app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
+});
+
+app.on("before-quit", () => {
+  closeDatabase();
 });
 //osX only ends

@@ -1,0 +1,12 @@
+# Navigate to your Electron app's folder
+cd /home/megatron/Documents/electron-pos/node_modules/electron/dist
+
+# Set ownership to root
+sudo chown root:root chrome-sandbox
+
+# Set correct permissions (SUID bit)
+sudo chmod 4755 chrome-sandbox
+
+
+kill port
+sudo kill -9 `sudo lsof -t -i:1212`

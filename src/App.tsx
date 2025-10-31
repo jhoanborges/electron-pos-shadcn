@@ -5,6 +5,9 @@ import { useTranslation } from "react-i18next";
 import { updateAppLanguage } from "./helpers/language_helpers";
 import { RouterProvider } from "@tanstack/react-router";
 import { router } from "./utils/routes";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "./redux/store";
 import "./localization/i18n";
 
 export default function App() {
@@ -21,6 +24,10 @@ export default function App() {
 const root = createRoot(document.getElementById("app")!);
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+      </PersistGate>
+    </Provider>
   </React.StrictMode>,
 );

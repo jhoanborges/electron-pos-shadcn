@@ -12,13 +12,74 @@ interface ThemeModeContext {
   system: () => Promise<boolean>;
   current: () => Promise<"dark" | "light" | "system">;
 }
+
 interface ElectronWindow {
   minimize: () => Promise<void>;
   maximize: () => Promise<void>;
   close: () => Promise<void>;
 }
 
+interface DatabaseResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+interface ProductInput {
+  name: string;
+  price: number;
+  category_id: number | null;
+  sku: string;
+  image?: string;
+  description?: string;
+  stock?: number;
+}
+
+interface ProductUpdate {
+  name?: string;
+  price?: number;
+  category_id?: number | null;
+  sku?: string;
+  image?: string;
+  description?: string;
+  stock?: number;
+}
+
+interface CategoryInput {
+  name: string;
+  description?: string;
+}
+
+interface CategoryUpdate {
+  name?: string;
+  description?: string;
+}
+
+interface ProductsAPI {
+  getAll: () => Promise<DatabaseResponse<any[]>>;
+  getById: (id: number) => Promise<DatabaseResponse<any>>;
+  create: (input: ProductInput) => Promise<DatabaseResponse<any>>;
+  update: (id: number, input: ProductUpdate) => Promise<DatabaseResponse<any>>;
+  delete: (id: number) => Promise<DatabaseResponse<void>>;
+  search: (query: string) => Promise<DatabaseResponse<any[]>>;
+  getByCategory: (categoryId: number) => Promise<DatabaseResponse<any[]>>;
+}
+
+interface CategoriesAPI {
+  getAll: () => Promise<DatabaseResponse<any[]>>;
+  getById: (id: number) => Promise<DatabaseResponse<any>>;
+  create: (input: CategoryInput) => Promise<DatabaseResponse<any>>;
+  update: (id: number, input: CategoryUpdate) => Promise<DatabaseResponse<any>>;
+  delete: (id: number) => Promise<DatabaseResponse<void>>;
+}
+
+interface DatabaseContext {
+  products: ProductsAPI;
+  categories: CategoriesAPI;
+}
+
 declare interface Window {
   themeMode: ThemeModeContext;
   electronWindow: ElectronWindow;
+  database: DatabaseContext;
 }
